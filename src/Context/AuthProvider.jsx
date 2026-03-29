@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { AuthContext } from './AuthContext';
-import { createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth';
 import { auth } from '../firebase.init';
 
 const googleProvider = new GoogleAuthProvider
@@ -25,6 +25,11 @@ const signInWithGoogle = ()=>{
     return signInWithPopup(auth, googleProvider)
 }
 
+const signOutUser = () =>{
+    setLoading(true)
+    return signOut(auth)
+}
+
 //effect er side effect achey , eitar kicho dependency, callback function thakeb
 useEffect(()=>{
     const unsubscribe = onAuthStateChanged(auth, (currentUser)=>{
@@ -41,6 +46,7 @@ const authinfo = {
     loading,
     signInUser,
     signInWithGoogle,
+    signOutUser,
 }
 
     return (
