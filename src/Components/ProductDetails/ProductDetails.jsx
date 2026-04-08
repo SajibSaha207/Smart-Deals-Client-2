@@ -34,6 +34,7 @@ const ProductDetails = () => {
             product:productId,
             buyer_name:name,
             buyer_email:email,
+            buyer_image: user?.photoURL,
             bid_price:bid,
             status:'Pending'
         }
@@ -57,6 +58,12 @@ const ProductDetails = () => {
   showConfirmButton: false,
   timer: 1500
 });
+
+//add the new bid to the state
+
+newBid._id = data.insertedId;
+const newBids = [...bids, newBid]
+setBids(newBids)
            }
         })
     }
@@ -109,6 +116,59 @@ const ProductDetails = () => {
             {/* bids for this product */}
             <div>
                 <h2 className='text-3xl'>Bids for this product: <span className='text-primary'>{bids?.length}</span></h2>
+            <div className="overflow-x-auto">
+  <table className="table">
+    {/* head */}
+    <thead>
+      <tr>
+        <th>
+        SL NO.
+        </th>
+        <th>Buyer Name</th>
+        <th>Buyer Email</th>
+        <th>Bid Price</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {/* row 1 */}
+        {
+            bids?.map((bid, index)=>  <tr>
+        <th>
+        {index + 1}
+        </th>
+        <td>
+          <div className="flex items-center gap-3">
+            <div className="avatar">
+              <div className="mask mask-squircle h-12 w-12">
+                <img
+                  src="https://img.daisyui.com/images/profile/demo/2@94.webp"
+                  alt="Avatar Tailwind CSS Component" />
+              </div>
+            </div>
+            <div>
+              <div className="font-bold">{bid?.buyer_name}</div>
+              
+            </div>
+          </div>
+        </td>
+        <td>
+          {bid?.buyer_email}
+      
+        </td>
+        <td>{bid?.bid_price}</td>
+        <th>
+          <button className="btn btn-ghost btn-xs">details</button>
+        </th>
+      </tr>)
+        }
+      {/* row 2 */}
+     
+     
+    
+    </tbody>
+  </table>
+</div>
             </div>
         </div>
     );
