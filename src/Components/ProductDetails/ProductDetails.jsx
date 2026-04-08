@@ -1,13 +1,64 @@
-import React, { useRef } from 'react';
+import React, { use, useEffect, useRef, useState } from 'react';
 import { useLoaderData } from 'react-router';
+import { AuthContext } from '../../Context/AuthContext';
+import Swal from 'sweetalert2';
 
 const ProductDetails = () => {
-    const product = useLoaderData();
+    const {_id:productId} = useLoaderData();
+    const [bids, setBids] = useState();
     const bidmodalRef = useRef(null);
-    console.log(product)
+    const { user } = use(AuthContext)
+
+    useEffect(()=>{
+        fetch(`http://localhost:3000/products/bids/${productId}`)
+        .then(res => res.json())
+        .then(data =>{
+            console.log('bids for this product', data)
+            setBids(data);
+        })
+    },[productId])
+    
 
     const handleBidModalOpen = () =>{
         bidmodalRef.current.showModal();
+    }
+
+    const handleBidSubmit = (e) =>{
+        e.preventDefault();
+        const name = e.target.name.value;
+        const email = e.target.email.value;
+        const bid = e.target.bidamount.value;
+        console.log(productId,name, email, bid)
+
+        const newBid ={
+            product:productId,
+            buyer_name:name,
+            buyer_email:email,
+            bid_price:bid,
+            status:'Pending'
+        }
+
+        fetch('http://localhost:3000/bids', {
+            method: 'POST',
+            headers:{
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(newBid)
+
+        })
+        .then(res => res.json())
+        .then(data =>{
+           if(data.insertedId){
+            bidmodalRef.current.close();
+            Swal.fire({
+  position: "center",
+  icon: "success",
+  title: "Your bid has been succesfull",
+  showConfirmButton: false,
+  timer: 1500
+});
+           }
+        })
     }
     return (
         <div>
@@ -20,12 +71,35 @@ const ProductDetails = () => {
                     <button onClick={handleBidModalOpen} className='btn btn-primary'>I want to buy this product</button>
 <dialog ref={bidmodalRef} className="modal modal-bottom sm:modal-middle">
   <div className="modal-box">
-    <h3 className="font-bold text-lg">Hello!</h3>
-    <p className="py-4">Press ESC key or click the button below to close</p>
+    <h3 className="font-bold text-lg">Give the best offer!</h3>
+    <p className="py-4">Offer something seller can not resist</p>
+
+    <form onSubmit={handleBidSubmit}>
+         <fieldset className="fieldset">
+          <label className="label">Name</label>
+          <input type="text" className="input" name='name'
+          readOnly
+          defaultValue={user?.displayName} />
+
+          {/* email */}
+          <label className="label">Email</label>
+          <input type="email" className="input" name='email' readOnly defaultValue={user?.email} />
+        
+        {/* bid amount */}
+         <label className="label">Bid Amount</label>
+          <input type="text" className="input" name='bidamount' placeholder='your bid'
+          />
+
+
+
+
+          <button className="btn btn-neutral mt-4">Submit Your Bid</button>
+        </fieldset>
+    </form>
     <div className="modal-action">
       <form method="dialog">
         {/* if there is a button in form, it will close the modal */}
-        <button className="btn">Close</button>
+        <button className="btn">Cancle</button>
       </form>
     </div>
   </div>
@@ -33,6 +107,9 @@ const ProductDetails = () => {
                 </div>
             </div>
             {/* bids for this product */}
+            <div>
+                <h2 className='text-3xl'>Bids for this product: <span className='text-primary'>{bids?.length}</span></h2>
+            </div>
         </div>
     );
 };
