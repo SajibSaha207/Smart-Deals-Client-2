@@ -42,12 +42,19 @@ swalWithBootstrapButtons.fire({
     })
     .then(res => res.json())
     .then(data => {
+        if(data.deletedCount){
 
       swalWithBootstrapButtons.fire({
         title: "Deleted!",
         text: "Your file has been deleted.",
         icon: "success"
       });
+
+//
+const remaingBids = bids.filter(bid => bid._id !== _id);
+setBids(remaingBids)
+
+    }
 
     });
 
