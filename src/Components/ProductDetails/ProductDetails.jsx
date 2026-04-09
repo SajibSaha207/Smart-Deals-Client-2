@@ -62,7 +62,8 @@ const ProductDetails = () => {
 //add the new bid to the state
 
 newBid._id = data.insertedId;
-const newBids = [...bids, newBid]
+const newBids = [...bids, newBid];
+newBids.sort((a,b) => b.bid_price - a.bid_price);
 setBids(newBids)
            }
         })
